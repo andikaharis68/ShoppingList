@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shoppinglist.data.repository.ItemRepository
 import com.example.shoppinglist.databinding.FragmentListBinding
 
@@ -17,6 +18,7 @@ class ListFragment : Fragment() {
 
     lateinit var binding: FragmentListBinding
     lateinit var viewModel: ListViewModel
+    lateinit var rvAdapter: ListViewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,16 +31,14 @@ class ListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentListBinding.inflate(layoutInflater)
-        return binding.root
-    }
-
-    companion object {
-
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ListFragment().apply {
-
+        binding.apply {
+            rvAdapter = ListViewAdapter()
+            recyclerViewItem.apply {
+                layoutManager = LinearLayoutManager(requireContext())
+                adapter = rvAdapter
             }
+        }
+        return binding.root
     }
 
     private fun initViewModel() {
@@ -52,7 +52,7 @@ class ListFragment : Fragment() {
 
     private fun subscribe() {
         viewModel.itemLiveData.observe(this){
-            Log.d("SUBSCRIBE", "$it")
+            rvAdapter.setData(it)
         }
     }
 }

@@ -23,7 +23,7 @@ class MenuFragment : Fragment() {
         binding = FragmentMenuBinding.inflate(layoutInflater)
         binding.apply {
             menuAddItem.setOnClickListener{
-
+                findNavController().navigate(R.id.action_menuFragment_to_formFragment)
             }
             menuListItem.setOnClickListener {
                 findNavController().navigate(R.id.action_menuFragment_to_listFragment)

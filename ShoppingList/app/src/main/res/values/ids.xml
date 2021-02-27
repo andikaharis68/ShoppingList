@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="name_tv" type="id" />
+    <item name="date_tv" type="id" />
+    <item name="quantity_tv" type="id" />
+    <item name="note_t" type="id" />
+    <item name="card_item" type="id" />
+</resources>
