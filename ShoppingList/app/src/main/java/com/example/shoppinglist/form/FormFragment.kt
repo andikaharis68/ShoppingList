@@ -3,27 +3,31 @@ package com.example.shoppinglist.form
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.InputType
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
+import com.enigmacamp.myviewmodel.ResourceStatus
 import com.example.shoppinglist.R
 import com.example.shoppinglist.data.model.Item
 import com.example.shoppinglist.data.repository.ItemRepository
 import com.example.shoppinglist.databinding.FragmentFormBinding
+import com.example.shoppinglist.util.component.LoadingDialog
 import java.util.*
 
 class FormFragment : Fragment() {
-    private var itemUpdate: Item? = null
     private lateinit var binding : FragmentFormBinding
     private lateinit var viewModel: FormViewModel
+    lateinit var loadingDialog: AlertDialog
+    private var itemUpdate: Item? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,9 +46,9 @@ class FormFragment : Fragment() {
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH)
         val day = calendar.get(Calendar.DAY_OF_MONTH)
+        loadingDialog = LoadingDialog.build(requireContext())
         binding = FragmentFormBinding.inflate(layoutInflater)
         binding.apply {
-            submitBtn.text = "UPDATE"
             itemUpdate?.apply {
                 dateEt.setText(date)
                 nameEt.editText?.setText(name)
@@ -80,8 +84,9 @@ class FormFragment : Fragment() {
                         quantity = quantity,
                         note = noteEt.editText?.text.toString()
                     )
-                    viewModel.save(itemUpdate!!)
+                    viewModel.inputItemValidation(itemUpdate!!)
                 } else {
+                    submitBtn.text = "UPDATE"
                     itemUpdate?.id?.let{it ->
                         itemUpdate = Item(
                             id = it,
@@ -90,7 +95,7 @@ class FormFragment : Fragment() {
                             quantity = quantity,
                             note = noteEt.editText?.text.toString()
                         )
-                        viewModel.save(itemUpdate!!)
+                        viewModel.inputItemValidation(itemUpdate!!)
                     }
                 }
             }
@@ -113,6 +118,23 @@ class FormFragment : Fragment() {
     private fun subscribe() {
         viewModel.itemLiveData.observe(this){
             findNavController().navigate(R.id.action_formFragment_to_listFragment)
+        }
+        viewModel.isItemValid.observe(this) {
+            when (it.status) {
+                ResourceStatus.LOADING -> loadingDialog.show()
+                ResourceStatus.SUCCESS -> {
+                    loadingDialog.hide()
+                    viewModel.save(itemUpdate!!)
+                    println("succes")}
+                ResourceStatus.FAIL -> {
+                    loadingDialog.hide()
+                    Toast.makeText(
+                        requireContext(),
+                        it.message,
+                        Toast.LENGTH_LONG
+                    ).show()
+                    println("fail")}
+            }
         }
     }
 }
