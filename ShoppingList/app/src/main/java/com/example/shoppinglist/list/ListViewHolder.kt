@@ -20,6 +20,9 @@ class ListViewHolder(view: View, val itemClickListenerInterface: ItemClickListen
             deleteBtn.setOnClickListener{
                 itemClickListenerInterface.onDelete(item)
             }
+            cardItemUpdate.setOnClickListener{
+                itemClickListenerInterface.onUpdate(item)
+            }
         }
     }
 }

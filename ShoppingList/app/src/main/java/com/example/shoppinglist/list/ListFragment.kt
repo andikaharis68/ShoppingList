@@ -6,10 +6,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.shoppinglist.R
 import com.example.shoppinglist.data.repository.ItemRepository
 import com.example.shoppinglist.databinding.FragmentListBinding
 
@@ -54,5 +57,15 @@ class ListFragment : Fragment() {
         viewModel.itemsLiveData.observe(this){
             rvAdapter.setData(it)
         }
+        viewModel.itemLiveData.observe(this) {
+            Navigation.findNavController(requireView())
+                .navigate(
+                    R.id.action_listFragment_to_formFragment,
+                    bundleOf("item_value" to it)
+                )
+        }
     }
+
+
+
 }

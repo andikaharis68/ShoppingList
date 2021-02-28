@@ -31,12 +31,18 @@ class ItemRepository : ItemRepositoryInterface{
     }
 
     override fun list(): List<Item> = itemList
-    override fun save(item: Item): Item {
-        if (item.id == "") {
-            item.id = UUID.randomUUID().toString()
-            itemList.add(item)
+    override fun save(items: Item): Item {
+        if (items.id == "") {
+            items.id = UUID.randomUUID().toString()
+            itemList.add(items)
+        } else {
+            val item = itemList.filter {
+                it.id == items.id
+            }
+            val index = itemList.indexOf(item.single())
+            itemList[index] = items
         }
-        return item
+        return items
     }
 
     override fun delete(item: Item): Item {
@@ -44,5 +50,8 @@ class ItemRepository : ItemRepositoryInterface{
         itemList.removeAt(i)
         return item
     }
+
+    override fun findByItem(item: Item): Item = itemList?.get(itemList.indexOf(item))
+
 
 }

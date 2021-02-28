@@ -14,12 +14,19 @@
             android:id="@+id/action_formFragment_to_listFragment"
             app:destination="@id/listFragment"
             app:popUpTo="@id/menuFragment" />
+        <argument
+            android:name="update_item"
+            app:argType="com.example.shoppinglist.data.model.Item" />
     </fragment>
     <fragment
         android:id="@+id/listFragment"
         android:name="com.example.shoppinglist.list.ListFragment"
         android:label="fragment_list"
-        tools:layout="@layout/fragment_list" />
+        tools:layout="@layout/fragment_list" >
+        <action
+            android:id="@+id/action_listFragment_to_formFragment"
+            app:destination="@id/formFragment" />
+    </fragment>
     <fragment
         android:id="@+id/menuFragment"
         android:name="com.example.shoppinglist.MenuFragment"

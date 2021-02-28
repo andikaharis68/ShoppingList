@@ -3,6 +3,7 @@ package com.example.shoppinglist.form
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.text.InputType
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,11 +21,15 @@ import com.example.shoppinglist.databinding.FragmentFormBinding
 import java.util.*
 
 class FormFragment : Fragment() {
+    private var itemUpdate: Item? = null
     private lateinit var binding : FragmentFormBinding
     private lateinit var viewModel: FormViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        arguments?.let {
+            itemUpdate = it.getParcelable<Item>("item_value")
+        }
         initModel()
         subscribe()
     }
@@ -37,9 +42,15 @@ class FormFragment : Fragment() {
         val year = calendar.get(Calendar.YEAR)
         val month = calendar.get(Calendar.MONTH)
         val day = calendar.get(Calendar.DAY_OF_MONTH)
-
         binding = FragmentFormBinding.inflate(layoutInflater)
         binding.apply {
+            submitBtn.text = "UPDATE"
+            itemUpdate?.apply {
+                dateEt.setText(date)
+                nameEt.editText?.setText(name)
+                quantityEt.editText?.setText(quantity.toString())
+                noteEt.editText?.setText(note)
+            }
             dateEt.inputType = InputType.TYPE_NULL
             dateEt.setOnClickListener(View.OnClickListener {
                 val datePickerDialog = activity?.let { it1 ->
@@ -56,20 +67,32 @@ class FormFragment : Fragment() {
                 datePickerDialog?.show()
             })
             submitBtn.setOnClickListener {
-                var quantity: Int = if (quantityEt.editText?.text.toString().isNullOrEmpty()) {
-                    0
+            var quantity: Int = if (quantityEt.editText?.text.toString().isNullOrEmpty()) {
+                0
+            } else {
+                quantityEt.editText?.text.toString().toInt()
+            }
+                if (itemUpdate == null){
+                    itemUpdate = Item(
+                        id = "",
+                        name = nameEt.editText?.text.toString(),
+                        date = dateEt.text.toString(),
+                        quantity = quantity,
+                        note = noteEt.editText?.text.toString()
+                    )
+                    viewModel.save(itemUpdate!!)
                 } else {
-                    quantityEt.editText?.text.toString().toInt()
+                    itemUpdate?.id?.let{it ->
+                        itemUpdate = Item(
+                            id = it,
+                            name = nameEt.editText?.text.toString(),
+                            date = dateEt.text.toString(),
+                            quantity = quantity,
+                            note = noteEt.editText?.text.toString()
+                        )
+                        viewModel.save(itemUpdate!!)
+                    }
                 }
-
-                val item = Item(
-                    id = "",
-                    name = nameEt.editText?.text.toString(),
-                    date = dateEt.text.toString(),
-                    quantity = quantity,
-                    note = noteEt.editText?.text.toString()
-                )
-                viewModel.save(item)
             }
             cancelBtn.setOnClickListener{
                 Navigation.findNavController(requireView()).popBackStack()
