@@ -1,7 +1,7 @@
 package com.example.shoppinglist.list
 
+import ListViewModel
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -32,7 +32,7 @@ class ListFragment : Fragment() {
     ): View? {
         binding = FragmentListBinding.inflate(layoutInflater)
         binding.apply {
-            rvAdapter = ListViewAdapter()
+            rvAdapter = ListViewAdapter(viewModel)
             recyclerViewItem.apply {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = rvAdapter
@@ -51,7 +51,7 @@ class ListFragment : Fragment() {
     }
 
     private fun subscribe() {
-        viewModel.itemLiveData.observe(this){
+        viewModel.itemsLiveData.observe(this){
             rvAdapter.setData(it)
         }
     }

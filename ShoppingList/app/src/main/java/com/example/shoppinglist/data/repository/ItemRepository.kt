@@ -38,4 +38,11 @@ class ItemRepository : ItemRepositoryInterface{
         }
         return item
     }
+
+    override fun delete(item: Item): Item {
+        val i : Int = itemList.indexOf(item)
+        itemList.removeAt(i)
+        return item
+    }
+
 }
