@@ -21,6 +21,14 @@ class ListViewModel(private val repository: ItemRepositoryInterface) : ViewModel
             return _itemLiveData
         }
 
+    init {
+        loadItemData(0)
+    }
+
+    fun loadItemData(page: Int) {
+        _itemsLiveData.value = repository.list(page)
+    }
+
     private fun loadItemData() {
         _itemsLiveData.value = repository.list()
     }
