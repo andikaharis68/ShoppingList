@@ -13,8 +13,10 @@ import androidx.lifecycle.observe
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shoppinglist.R
-import com.example.shoppinglist.data.repository.ItemRepository
+import com.example.shoppinglist.database.ItemDatabase
+import com.example.shoppinglist.database.repository.ItemRepository
 import com.example.shoppinglist.databinding.FragmentListBinding
+import com.example.shoppinglist.form.FormViewModel
 
 
 class ListFragment : Fragment() {
@@ -37,17 +39,17 @@ class ListFragment : Fragment() {
         binding = FragmentListBinding.inflate(layoutInflater)
         binding.apply {
 
-            nextBtn.setOnClickListener{
-                viewModel.loadItemData(++page)
-                pageTv.text = page.toString()
-            }
-
-            prevBtn.setOnClickListener {
-                if (page > 0) {
-                    viewModel.loadItemData(--page)
-                    pageTv.text = page.toString()
-                }
-            }
+//            nextBtn.setOnClickListener{
+//                viewModel.loadItemData(++page)
+//                pageTv.text = page.toString()
+//            }
+//
+//            prevBtn.setOnClickListener {
+//                if (page > 0) {
+//                    viewModel.loadItemData(--page)
+//                    pageTv.text = page.toString()
+//                }
+//            }
             rvAdapter = ListViewAdapter(viewModel)
 
             recyclerViewItem.apply {
@@ -59,12 +61,14 @@ class ListFragment : Fragment() {
     }
 
     private fun initViewModel() {
-        viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory{
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                val repo = ItemRepository()
-                return ListViewModel(repo) as T
-            }
-        }).get(ListViewModel::class.java)
+        viewModel = ViewModelProvider(this,
+            object : ViewModelProvider.Factory {
+                override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                    val itemDao = ItemDatabase.getDatabase(requireContext()).dao()
+                    val itemRepository = ItemRepository(itemDao)
+                    return FormViewModel(itemRepository) as T
+                }
+            }).get(ListViewModel::class.java)
     }
 
     private fun subscribe() {

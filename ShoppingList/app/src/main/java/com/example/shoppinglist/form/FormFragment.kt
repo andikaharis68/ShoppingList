@@ -18,7 +18,8 @@ import androidx.navigation.fragment.findNavController
 import com.enigmacamp.myviewmodel.ResourceStatus
 import com.example.shoppinglist.R
 import com.example.shoppinglist.data.model.Item
-import com.example.shoppinglist.data.repository.ItemRepository
+import com.example.shoppinglist.database.ItemDatabase
+import com.example.shoppinglist.database.repository.ItemRepository
 import com.example.shoppinglist.databinding.FragmentFormBinding
 import com.example.shoppinglist.util.component.LoadingDialog
 import java.util.*
@@ -31,9 +32,6 @@ class FormFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            itemUpdate = it.getParcelable<Item>("item_value")
-        }
         initModel()
         subscribe()
     }
@@ -78,7 +76,6 @@ class FormFragment : Fragment() {
             }
                 if (itemUpdate == null){
                     itemUpdate = Item(
-                        id = "",
                         name = nameEt.editText?.text.toString(),
                         date = dateEt.text.toString(),
                         quantity = quantity,
@@ -107,16 +104,18 @@ class FormFragment : Fragment() {
     }
 
     private fun initModel() {
-        viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                val repo = ItemRepository()
-                return FormViewModel(repo) as T
-            }
-        }).get(FormViewModel::class.java)
+        viewModel = ViewModelProvider(this,
+            object : ViewModelProvider.Factory {
+                override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                    val itemDao = ItemDatabase.getDatabase(requireContext()).dao()
+                    val itemRepository = ItemRepository(itemDao)
+                    return FormViewModel(itemRepository) as T
+                }
+            }).get(FormViewModel::class.java)
     }
 
     private fun subscribe() {
-        viewModel.itemLiveData.observe(this){
+        viewModel.isItemAdded.observe(this){
             findNavController().navigate(R.id.action_formFragment_to_listFragment)
         }
         viewModel.isItemValid.observe(this) {
@@ -124,7 +123,11 @@ class FormFragment : Fragment() {
                 ResourceStatus.LOADING -> loadingDialog.show()
                 ResourceStatus.SUCCESS -> {
                     loadingDialog.hide()
-                    viewModel.save(itemUpdate!!)
+                    if(itemUpdate == null){
+                        viewModel.addItem(itemUpdate!!)
+                    } else {
+                        viewModel.updateItem(itemUpdate!!)
+                    }
                     println("succes")}
                 ResourceStatus.FAIL -> {
                     loadingDialog.hide()

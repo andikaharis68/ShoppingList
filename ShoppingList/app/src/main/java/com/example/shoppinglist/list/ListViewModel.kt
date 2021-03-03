@@ -3,7 +3,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.shoppinglist.data.listeners.ItemClickListenerInterface
 import com.example.shoppinglist.data.model.Item
-import com.example.shoppinglist.data.repository.ItemRepositoryInterface
+import com.example.shoppinglist.database.repository.ItemRepositoryInterface
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ListViewModel(private val repository: ItemRepositoryInterface) : ViewModel(), ItemClickListenerInterface {
 
@@ -21,28 +24,20 @@ class ListViewModel(private val repository: ItemRepositoryInterface) : ViewModel
             return _itemLiveData
         }
 
-    init {
-        loadItemData(0)
-    }
-
-    fun loadItemData(page: Int) {
-        _itemsLiveData.value = repository.list(page)
-    }
-
     private fun loadItemData() {
-        _itemsLiveData.value = repository.list()
-    }
-
-    private fun getItemData(item: Item) {
-        _itemLiveData.value = repository.findByItem(item)
+        _itemsLiveData = repository.itemsList
     }
 
     override fun onDelete(item: Item) {
-        repository.delete(item)
-        loadItemData()
+        CoroutineScope(Dispatchers.IO).launch {
+            repository.deleteItemRepository(item)
+            loadItemData()
+        }
     }
 
-    override fun onUpdate(item: Item) {
-        getItemData(item)
+    override fun onUpdate(id:Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            _itemLiveData = repository.findItemByIdRepository(id)
+        }
     }
 }

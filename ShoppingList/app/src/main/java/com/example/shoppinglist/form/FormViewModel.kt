@@ -5,33 +5,39 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.enigmacamp.myviewmodel.ResourceState
 import com.example.shoppinglist.data.model.Item
-import com.example.shoppinglist.data.repository.ItemRepository
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.example.shoppinglist.database.repository.ItemRepository
+import kotlinx.coroutines.*
 
-class FormViewModel(val repository: ItemRepository) : ViewModel() {
-    private var _itemLiveData = MutableLiveData<Item>()
+class FormViewModel(private val repository: ItemRepository) : ViewModel() {
+
     private var _isItemValid = MutableLiveData<ResourceState>()
-
-    val itemLiveData: LiveData<Item>
-        get() {
-            return _itemLiveData
-        }
+    private var _itemAdded = MutableLiveData<Item>()
 
     val isItemValid: LiveData<ResourceState>
         get() {
             return _isItemValid
         }
 
-    fun save(item: Item) {
-        _itemLiveData.value = repository.save(item)
+    val isItemAdded: LiveData<Item>
+        get() {
+            return _itemAdded
+        }
+
+    fun addItem(item:Item) {
+        CoroutineScope(Dispatchers.IO).launch{
+            _itemAdded = repository.addItemRepository(item) as MutableLiveData<Item>
+        }
+    }
+
+    fun updateItem(item:Item){
+        CoroutineScope(Dispatchers.IO).launch {
+            _itemAdded = repository.updateItemRepository(item) as MutableLiveData<Item>
+        }
     }
 
     fun inputItemValidation(item: Item) {
-        GlobalScope.launch {
+        CoroutineScope(Dispatchers.IO).launch{
             _isItemValid.postValue(ResourceState.loading())
-            delay(3000)
             if (!item.date.isNullOrBlank() && !item.name.isNullOrBlank() && item.quantity > 0 && !item.note.isNullOrBlank()) {
                 _isItemValid.postValue(ResourceState.success(true))
             } else {
@@ -40,3 +46,23 @@ class FormViewModel(val repository: ItemRepository) : ViewModel() {
         }
     }
 }
+
+
+
+
+//    private var _itemLiveData = MutableLiveData<Item>()
+//    private var _isItemValid = MutableLiveData<ResourceState>()
+//
+//    val itemLiveData: LiveData<Item>
+//        get() {
+//            return _itemLiveData
+//        }
+//
+//    val isItemValid: LiveData<ResourceState>
+//        get() {
+//            return _isItemValid
+//        }
+//
+//    fun save(item: Item) {
+//        _itemLiveData.value = repository.save(item)
+//    }
