@@ -45,5 +45,4 @@ class ListViewModel(private val repository: ItemRepositoryInterface) : ViewModel
     override fun onUpdate(item: Item) {
         getItemData(item)
     }
-
 }

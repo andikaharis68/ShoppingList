@@ -20,17 +20,13 @@
         android:background="@drawable/blue_light_rect1"
         >
 
-
         <LinearLayout
             android:id="@+id/card_item_update"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             tools:ignore="DuplicateIds">
-            var name: String,
-            var date: String,
-            var quantity: Int,
-            var note: String
+
             <TextView
                 android:id="@+id/name_tv"
                 android:layout_marginTop="10dp"

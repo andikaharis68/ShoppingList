@@ -48,8 +48,8 @@ class ListFragment : Fragment() {
                     pageTv.text = page.toString()
                 }
             }
-
             rvAdapter = ListViewAdapter(viewModel)
+
             recyclerViewItem.apply {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = rvAdapter
