@@ -12,7 +12,6 @@ class ListViewModel(private val repository: ItemRepositoryInterface) : ViewModel
 
     val itemsLiveData: LiveData<List<Item>>
         get() {
-            loadItemData()
             return _itemsLiveData
         }
 
@@ -21,17 +20,12 @@ class ListViewModel(private val repository: ItemRepositoryInterface) : ViewModel
             return _itemLiveData
         }
 
-    private fun loadItemData() {
-        _itemsLiveData.value = repository.list()
-    }
-
-    private fun getItemData(item: Item) {
+  fun getItemData(item: Item) {
         _itemLiveData.value = repository.findByItem(item)
     }
 
     override fun onDelete(item: Item) {
         repository.delete(item)
-        loadItemData()
     }
 
     override fun onUpdate(item: Item) {
