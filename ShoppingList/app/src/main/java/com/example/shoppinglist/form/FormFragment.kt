@@ -18,8 +18,8 @@ import androidx.navigation.fragment.findNavController
 import com.enigmacamp.myviewmodel.ResourceStatus
 import com.example.shoppinglist.R
 import com.example.shoppinglist.data.model.Item
-import com.example.shoppinglist.database.ItemDatabase
-import com.example.shoppinglist.database.repository.ItemRepository
+import com.example.shoppinglist.api.ItemDatabase
+import com.example.shoppinglist.repository.ItemRepository
 import com.example.shoppinglist.databinding.FragmentFormBinding
 import com.example.shoppinglist.util.component.LoadingDialog
 import java.util.*

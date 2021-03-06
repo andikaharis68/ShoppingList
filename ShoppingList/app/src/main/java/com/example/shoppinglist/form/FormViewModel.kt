@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.enigmacamp.myviewmodel.ResourceState
 import com.example.shoppinglist.data.model.Item
-import com.example.shoppinglist.database.repository.ItemRepository
+import com.example.shoppinglist.repository.ItemRepository
 import kotlinx.coroutines.*
 
 class FormViewModel(private val repository: ItemRepository) : ViewModel() {

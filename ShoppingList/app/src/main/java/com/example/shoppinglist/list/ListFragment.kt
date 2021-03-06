@@ -13,8 +13,8 @@ import androidx.lifecycle.observe
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.shoppinglist.R
-import com.example.shoppinglist.database.ItemDatabase
-import com.example.shoppinglist.database.repository.ItemRepository
+import com.example.shoppinglist.api.ItemDatabase
+import com.example.shoppinglist.repository.ItemRepository
 import com.example.shoppinglist.databinding.FragmentListBinding
 import com.example.shoppinglist.form.FormViewModel
 
