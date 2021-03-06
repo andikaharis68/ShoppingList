@@ -61,14 +61,12 @@ class ListFragment : Fragment() {
     }
 
     private fun initViewModel() {
-        viewModel = ViewModelProvider(this,
-            object : ViewModelProvider.Factory {
-                override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                    val itemDao = ItemDatabase.getDatabase(requireContext()).dao()
-                    val itemRepository = ItemRepository(itemDao)
-                    return FormViewModel(itemRepository) as T
-                }
-            }).get(ListViewModel::class.java)
+        viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                val repository = ItemRepository()
+                return ListViewModel(repository) as T
+            }
+        }).get(ListViewModel::class.java)
     }
 
     private fun subscribe() {

@@ -9,12 +9,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class ListViewModel(private val repository: ItemRepositoryInterface) : ViewModel(), ItemClickListenerInterface {
+class ListViewModel(private val repository: ItemRepositoryInterface) : ViewModel() {
 
     private var _itemsLiveData = MutableLiveData<ResourceState>()
     private var _itemLiveData = MutableLiveData<Item>()
 
-    val itemsLiveData: LiveData<List<Item>>
+    val itemsLiveData: LiveData<ResourceState>
         get() {
             loadItemData()
             return _itemsLiveData
@@ -31,8 +31,8 @@ class ListViewModel(private val repository: ItemRepositoryInterface) : ViewModel
             val response = repository.getItem()
             if (response.isSuccessful) {
                 response.body()?.let {
-                    val responseText = "Country: " + it.sys!!.country + "\n" +
-                            "Temperature: " + it.main!!.temp + "K"
+                    val responseText = "Date: " + it.date!! + "\n" +
+                            "Name: " + it.name!! + "Quantity: " + it.quantity + "Note: " + it.note
                     _itemsLiveData.postValue(ResourceState.success(responseText))
                 }
             } else {
@@ -41,16 +41,16 @@ class ListViewModel(private val repository: ItemRepositoryInterface) : ViewModel
         }
     }
 
-    override fun onDelete(item: Item) {
-        CoroutineScope(Dispatchers.IO).launch {
-            repository.deleteItemRepository(item)
-            loadItemData()
-        }
-    }
-
-    override fun onUpdate(id:Int) {
-        CoroutineScope(Dispatchers.IO).launch {
-            _itemLiveData = repository.findItemByIdRepository(id)
-        }
-    }
+//    override fun onDelete(item: Item) {
+//        CoroutineScope(Dispatchers.IO).launch {
+//            repository.deleteItemRepository(item)
+//            loadItemData()
+//        }
+//    }
+//
+//    override fun onUpdate(id:Int) {
+//        CoroutineScope(Dispatchers.IO).launch {
+//            _itemLiveData = repository.findItemByIdRepository(id)
+//        }
+//    }
 }
