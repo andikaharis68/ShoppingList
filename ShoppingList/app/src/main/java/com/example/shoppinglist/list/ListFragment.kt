@@ -27,6 +27,7 @@ class ListFragment : Fragment() {
         super.onCreate(savedInstanceState)
         initViewModel()
         subscribe()
+        viewModel.getALlData()
     }
 
     override fun onCreateView(
@@ -65,7 +66,4 @@ class ListFragment : Fragment() {
                 )
         }
     }
-
-
-
 }

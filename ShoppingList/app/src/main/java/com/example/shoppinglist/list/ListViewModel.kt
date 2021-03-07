@@ -20,7 +20,11 @@ class ListViewModel(private val repository: ItemRepositoryInterface) : ViewModel
             return _itemLiveData
         }
 
-  fun getItemData(item: Item) {
+  fun getALlData() {
+      _itemsLiveData.value = repository.list()
+  }
+
+    fun getItemData(item: Item) {
         _itemLiveData.value = repository.findByItem(item)
     }
 
