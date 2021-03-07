@@ -1,3 +1,4 @@
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,48 +10,49 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class ListViewModel(private val repository: ItemRepositoryInterface) : ViewModel() {
+class ListViewModel(private val repository: ItemRepositoryInterface) : ViewModel(), ItemClickListenerInterface {
 
     private var _itemsLiveData = MutableLiveData<ResourceState>()
-    private var _itemLiveData = MutableLiveData<Item>()
+    private var _updateLiveData = MutableLiveData<ResourceState>()
 
     val itemsLiveData: LiveData<ResourceState>
         get() {
-            loadItemData()
             return _itemsLiveData
         }
-
-    val itemLiveData: LiveData<Item>
+    val updateLiveData: LiveData<ResourceState>
         get() {
-            return _itemLiveData
+            return _updateLiveData
         }
 
-    private fun loadItemData() {
+    fun getAllData() {
         CoroutineScope(Dispatchers.IO).launch {
             _itemsLiveData.postValue(ResourceState.loading())
-            val response = repository.getItem()
+            val response = repository.getAllItem()
             if (response.isSuccessful) {
                 response.body()?.let {
-                    val responseText = "Date: " + it.date!! + "\n" +
-                            "Name: " + it.name!! + "Quantity: " + it.quantity + "Note: " + it.note
-                    _itemsLiveData.postValue(ResourceState.success(responseText))
+                    Log.d("DATA", "$it")
+                    _itemsLiveData.postValue(ResourceState.success(it))
                 }
             } else {
-                _itemsLiveData.postValue(ResourceState.fail("Sorry, error..."))
+                _itemsLiveData.postValue(ResourceState.fail("error"))
             }
         }
     }
 
-//    override fun onDelete(item: Item) {
-//        CoroutineScope(Dispatchers.IO).launch {
-//            repository.deleteItemRepository(item)
-//            loadItemData()
-//        }
-//    }
-//
-//    override fun onUpdate(id:Int) {
-//        CoroutineScope(Dispatchers.IO).launch {
-//            _itemLiveData = repository.findItemByIdRepository(id)
-//        }
-//    }
+    override fun onDelete(id: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            repository.deleteItem(id)
+        }
+    }
+
+    override fun onEdit(id: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val response = repository.getItemById(id)
+            if(response.isSuccessful) {
+                _itemsLiveData.postValue(ResourceState.success(response.body()))
+            } else {
+                _itemsLiveData.postValue(ResourceState.fail("error"))
+            }
+        }
+    }
 }

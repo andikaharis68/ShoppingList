@@ -9,4 +9,9 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.hide()
         setContentView(R.layout.activity_main)
     }
+
+    companion object {
+        val baseUrl = "http://10.10.12.95:8080/"
+
+    }
 }

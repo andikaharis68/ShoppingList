@@ -18,7 +18,7 @@ import androidx.navigation.fragment.findNavController
 import com.enigmacamp.myviewmodel.ResourceStatus
 import com.example.shoppinglist.R
 import com.example.shoppinglist.data.model.Item
-import com.example.shoppinglist.api.ItemDatabase
+import com.example.shoppinglist.data.model.ItemRequest
 import com.example.shoppinglist.repository.ItemRepository
 import com.example.shoppinglist.databinding.FragmentFormBinding
 import com.example.shoppinglist.util.component.LoadingDialog
@@ -29,9 +29,13 @@ class FormFragment : Fragment() {
     private lateinit var viewModel: FormViewModel
     lateinit var loadingDialog: AlertDialog
     private var itemUpdate: Item? = null
+    private var itemRequestValue: ItemRequest? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        arguments?.let {
+            itemUpdate = it.getParcelable<Item>("edit_item")
+        }
         initModel()
         subscribe()
     }
@@ -75,7 +79,7 @@ class FormFragment : Fragment() {
                 quantityEt.editText?.text.toString().toInt()
             }
                 if (itemUpdate == null){
-                    itemUpdate = Item(
+                    itemRequestValue = ItemRequest(
                         name = nameEt.editText?.text.toString(),
                         date = dateEt.text.toString(),
                         quantity = quantity,
@@ -85,14 +89,14 @@ class FormFragment : Fragment() {
                 } else {
                     submitBtn.text = "UPDATE"
                     itemUpdate?.id?.let{it ->
-                        itemUpdate = Item(
+                        itemRequestValue = ItemRequest(
                             id = it,
                             name = nameEt.editText?.text.toString(),
                             date = dateEt.text.toString(),
                             quantity = quantity,
                             note = noteEt.editText?.text.toString()
                         )
-                        viewModel.inputItemValidation(itemUpdate!!)
+                        viewModel.inputItemValidation(itemRequestValue!!)
                     }
                 }
             }
@@ -104,30 +108,25 @@ class FormFragment : Fragment() {
     }
 
     private fun initModel() {
-        viewModel = ViewModelProvider(this,
-            object : ViewModelProvider.Factory {
-                override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                    val itemDao = ItemDatabase.getDatabase(requireContext()).dao()
-                    val itemRepository = ItemRepository(itemDao)
-                    return FormViewModel(itemRepository) as T
-                }
-            }).get(FormViewModel::class.java)
+        viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                val repo =
+                        ItemRepository()
+                return FormViewModel(repo) as T
+            }
+        }).get(FormViewModel::class.java)
     }
 
     private fun subscribe() {
-        viewModel.isItemAdded.observe(this){
+        viewModel.itemLiveData.observe(this){
             findNavController().navigate(R.id.action_formFragment_to_listFragment)
         }
-        viewModel.isItemValid.observe(this) {
+        viewModel.isValid.observe(this) {
             when (it.status) {
                 ResourceStatus.LOADING -> loadingDialog.show()
                 ResourceStatus.SUCCESS -> {
                     loadingDialog.hide()
-                    if(itemUpdate == null){
-                        viewModel.addItem(itemUpdate!!)
-                    } else {
-                        viewModel.updateItem(itemUpdate!!)
-                    }
+                    viewModel.addData(itemRequestValue!!)
                     println("succes")}
                 ResourceStatus.FAIL -> {
                     loadingDialog.hide()

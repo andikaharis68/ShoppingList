@@ -1,12 +1,13 @@
 package com.example.shoppinglist.api
 
+import com.example.shoppinglist.MainActivity
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitInstance {
-    val retrofit = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("10.0.2.2:3000/")
-            .build()
-    fun getApiService() = retrofit.create(ServiceApi::class.java)
+    val okHttpClient = OkHttpClient.Builder().build()
+    val retrofit = Retrofit.Builder().baseUrl(MainActivity.baseUrl).client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create()).build()
+    fun getApiService() = retrofit.create(ItemApi::class.java)
 }
