@@ -12,6 +12,5 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         val baseUrl = "http://10.10.12.95:8080/"
-
     }
 }

@@ -18,10 +18,10 @@ class ListViewHolder(view: View, val itemClickListenerInterface: ItemClickListen
             dateTv.text = item.date
             noteTv.text = item.note
             deleteBtn.setOnClickListener{
-                itemClickListenerInterface.onDelete(item)
+                itemClickListenerInterface.onDelete(item.id)
             }
             cardItemUpdate.setOnClickListener{
-                itemClickListenerInterface.onUpdate(item)
+                itemClickListenerInterface.onEdit(item.id)
             }
         }
     }

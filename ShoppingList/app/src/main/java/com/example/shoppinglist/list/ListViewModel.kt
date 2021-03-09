@@ -4,13 +4,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.enigmacamp.myviewmodel.ResourceState
 import com.example.shoppinglist.data.listeners.ItemClickListenerInterface
-import com.example.shoppinglist.data.model.Item
 import com.example.shoppinglist.repository.ItemRepositoryInterface
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ListViewModel(private val repository: ItemRepositoryInterface) : ViewModel(), ItemClickListenerInterface {
+@HiltViewModel
+class ListViewModel @Inject constructor(private val repository: ItemRepositoryInterface) : ViewModel(), ItemClickListenerInterface {
 
     private var _itemsLiveData = MutableLiveData<ResourceState>()
     private var _updateLiveData = MutableLiveData<ResourceState>()

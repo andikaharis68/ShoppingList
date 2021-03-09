@@ -19,8 +19,9 @@ import com.example.shoppinglist.data.model.Item
 import com.example.shoppinglist.repository.ItemRepository
 import com.example.shoppinglist.databinding.FragmentListBinding
 import com.example.shoppinglist.form.FormViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class ListFragment : Fragment() {
 
     lateinit var binding: FragmentListBinding
@@ -31,6 +32,7 @@ class ListFragment : Fragment() {
         super.onCreate(savedInstanceState)
         initViewModel()
         subscribe()
+        viewModel.getAllData()
     }
 
     override fun onCreateView(
@@ -40,7 +42,6 @@ class ListFragment : Fragment() {
         binding = FragmentListBinding.inflate(layoutInflater)
         binding.apply {
             rvAdapter = ListViewAdapter(viewModel)
-
             recyclerViewItem.apply {
                 layoutManager = LinearLayoutManager(requireContext())
                 adapter = rvAdapter
@@ -50,12 +51,7 @@ class ListFragment : Fragment() {
     }
 
     private fun initViewModel() {
-        viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                val repository = ItemRepository()
-                return ListViewModel(repository) as T
-            }
-        }).get(ListViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(ListViewModel::class.java)
     }
 
     private fun subscribe() {

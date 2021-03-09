@@ -22,8 +22,10 @@ import com.example.shoppinglist.data.model.ItemRequest
 import com.example.shoppinglist.repository.ItemRepository
 import com.example.shoppinglist.databinding.FragmentFormBinding
 import com.example.shoppinglist.util.component.LoadingDialog
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
+@AndroidEntryPoint
 class FormFragment : Fragment() {
     private lateinit var binding : FragmentFormBinding
     private lateinit var viewModel: FormViewModel
@@ -85,7 +87,7 @@ class FormFragment : Fragment() {
                         quantity = quantity,
                         note = noteEt.editText?.text.toString()
                     )
-                    viewModel.inputItemValidation(itemUpdate!!)
+                    viewModel.inputItemValidation(itemRequestValue!!)
                 } else {
                     submitBtn.text = "UPDATE"
                     itemUpdate?.id?.let{it ->
@@ -108,13 +110,7 @@ class FormFragment : Fragment() {
     }
 
     private fun initModel() {
-        viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                val repo =
-                        ItemRepository()
-                return FormViewModel(repo) as T
-            }
-        }).get(FormViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(FormViewModel::class.java)
     }
 
     private fun subscribe() {
